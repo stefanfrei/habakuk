@@ -27,6 +27,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 public class CacheManager {
 
     private static final Logger w = LogManager.getLogger(CacheManager.class);
+    private static final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 
     private final Path dir;
     private final DirectoryObserver dirObs;
@@ -57,23 +65,26 @@ public class CacheManager {
 
         w.info("i am managing directory [ " + dir + " ]");
 
-        for(;;) {
+        AtomicLong waitTime = new AtomicLong(2000);
 
-            try {
-                String task = processQueue();
-
+        try {
+            for (;;) {
+                w.info("iteration wait -> " + waitTime.get() + "ms");
+                ScheduledFuture<String> future = exec.schedule(() -> {
+                    return processQueue();
+                }, waitTime.get(), TimeUnit.MILLISECONDS);
+                String task = future.get();
                 if (task != null) {
                     w.info("file [ " + task + " ] needs refresh");
+                } else {
+                    w.info("no work :D");
                 }
-
-                Thread.sleep(50);
-
-            } catch(InterruptedException e) {
-                w.error(e.getMessage());
             }
+        } catch (InterruptedException | ExecutionException e) {
+            w.warn(e.getMessage());
         }
-    }
 
+    }
 
     /**
      *
