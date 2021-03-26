@@ -79,7 +79,7 @@ class DirectoryObserver implements Runnable {
 
         this.eq = eq;
 
-        w.info("Scanning %s ...\n", dir);
+        w.info("Scanning " + dir + " ...");
         registerAll(dir);
         w.info("Done.");
 
@@ -97,13 +97,14 @@ class DirectoryObserver implements Runnable {
             WatchKey key;
             try {
                 key = watcher.take();
-            } catch (InterruptedException x) {
+            } catch (InterruptedException e) {
+                w.warn(e.getMessage());
                 return;
             }
 
             Path dir = keys.get(key);
             if (dir == null) {
-                System.out.println("unsupported file-event");
+                w.warn("unsupported file-event");
                 continue;
             }
 
@@ -117,7 +118,7 @@ class DirectoryObserver implements Runnable {
                 Path child = dir.resolve(name);
 
                 // print out event
-                System.out.format("%s: %s\n", event.kind().name(), child);
+                w.info(event.kind().name() + ": " + child);
 
                 // if directory is created, and watching recursively, then
                 // register it and its sub-directories
@@ -127,7 +128,7 @@ class DirectoryObserver implements Runnable {
                             registerAll(child);
                         }
                     } catch (IOException e) {
-                        System.out.println(e.getMessage());
+                        w.error(e.getMessage());
                     }
                 }
             }

@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Stefan Frei <stefan.a.frei@gmail.com>
  */
-public class CacheManager implements FilechangeListener {
+public class CacheManager {
 
     private static final Logger w = LogManager.getLogger(CacheManager.class);
 
@@ -54,19 +54,35 @@ public class CacheManager implements FilechangeListener {
     }
 
     void work() {
+
+        w.info("i am managing directory [ " + dir + " ]");
+
         for(;;) {
+
             try {
-                w.info("i am managing directory [ " + dir + " ]");
-                Thread.currentThread().sleep(2000);
+                String task = processQueue();
+
+                if (task != null) {
+                    w.info("file [ " + task + " ] needs refresh");
+                }
+
+                Thread.sleep(50);
+
             } catch(InterruptedException e) {
                 w.error(e.getMessage());
             }
         }
     }
 
-    @Override
-    public void fileChanged() {
-        w.info("file has changed");
+
+    /**
+     *
+     * @return task (path to changed file)
+     */
+    private String processQueue() {
+
+        return eq.poll();
+
     }
 
 }
