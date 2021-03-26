@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 Stefan Frei.
+ * Copyright 2021 Stefan Frei <stefan.a.frei@gmail.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,40 +23,49 @@
  */
 package org.schlibbuz.habakuk;
 
-
-import java.io.IOException;
-import java.nio.file.Paths;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  *
  * @author Stefan Frei <stefan.a.frei@gmail.com>
  */
-public class Main {
+public class SimpleCacheManagerTest {
+
+    public SimpleCacheManagerTest() {
+    }
+
+    @BeforeAll
+    public static void setUpClass() {
+    }
+
+    @AfterAll
+    public static void tearDownClass() {
+    }
+
+    @BeforeEach
+    public void setUp() {
+    }
+
+    @AfterEach
+    public void tearDown() {
+    }
 
     /**
-     * writing <w> is a lot faster than writing <LOGGER> ;)
+     * Test of work method, of class SimpleCacheManager.
      */
-    private static final Logger w = LogManager.getLogger(Main.class);
-
-    /**
-     * @param args the command line arguments
-     * @throws java.io.IOException
-     */
-    public static void main(String[] args) throws IOException {
-
-        w.info("app started");
-
-        String dir = "d:/dev/habakuk/data";
-
-        new SimpleCacheManager(
-                Paths.get(dir)
-        ).work(); // Go to work bitch
-
-        w.info("app finished");
-
+    @Test
+    public void testWork() {
+        System.out.println("work");
+        SimpleCacheManager instance = null;
+        instance.work();
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
 }
