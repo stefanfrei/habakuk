@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 Stefan Frei.
+ * Copyright 2021 Stefan Frei <stefan.a.frei@gmail.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,48 +23,50 @@
  */
 package org.schlibbuz.habakuk;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.Queue;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author Stefan Frei <stefan.a.frei@gmail.com>
  */
-public class AnimalTest {
+public class CacheManager implements FilechangeListener {
 
-    public AnimalTest() {
+    private static final Logger w = LogManager.getLogger(CacheManager.class);
+
+    private final Path dir;
+    private final DirectoryObserver dirObs;
+    private final Queue<String> eq;
+
+    CacheManager(Path dir) throws IOException {
+        this.dir = dir;
+        eq = new LinkedList<>();
+        dirObs = new DirectoryObserver(dir, eq);
+        initDirObs();
     }
 
-    @BeforeAll
-    public static void setUpClass() {
+    private void initDirObs() {
+        new Thread(dirObs).start();
     }
 
-    @AfterAll
-    public static void tearDownClass() {
+    void work() {
+        for(;;) {
+            try {
+                w.info("i am managing directory [ " + dir + " ]");
+                Thread.currentThread().sleep(2000);
+            } catch(InterruptedException e) {
+                w.error(e.getMessage());
+            }
+        }
     }
 
-    @BeforeEach
-    public void setUp() {
-    }
-
-    @AfterEach
-    public void tearDown() {
-    }
-
-    /**
-     * Test of getName method, of class Animal.
-     */
-    @Test
-    public void testGetName() {
-        System.out.println("getName");
-        Animal instance = new Animal("Äffli");
-        String expResult = "Äffli";
-        String result = instance.getName();
-        assertEquals(expResult, result);
+    @Override
+    public void fileChanged() {
+        w.info("file has changed");
     }
 
 }

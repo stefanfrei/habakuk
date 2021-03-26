@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2021 Stefan Frei.
+ * Copyright 2021 Stefan Frei <stefan.a.frei@gmail.com>.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,6 @@ package org.schlibbuz.habakuk;
  *
  * @author Stefan Frei <stefan.a.frei@gmail.com>
  */
-class AnimalService {
-
-    AnimalService() {
-
-    }
+public interface FilechangeListener {
+    void fileChanged();
 }

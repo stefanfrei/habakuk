@@ -24,6 +24,9 @@
 package org.schlibbuz.habakuk;
 
 
+import java.io.IOException;
+import java.nio.file.Paths;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -33,12 +36,26 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Main {
 
-    private static final Logger q = LogManager.getLogger(Main.class);
+    /**
+     * writing <w> is a lot faster than writing <LOGGER> ;)
+     */
+    private static final Logger w = LogManager.getLogger(Main.class);
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+
+        w.info("app started");
+
+        String dir = "d:/dev/habakuk/data";
+
+        new CacheManager(
+                Paths.get(dir)
+        ).work(); // Go to work bitch
+
+        w.info("app finished");
 
     }
 
