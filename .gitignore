@@ -1,0 +1,11 @@
+# netbeans
+nbproject/
+nb-configuration.xml
+nbactions.xml
+
+# mvn
+target/
+
+# app
+logs/
+src/main/resources/app.props
