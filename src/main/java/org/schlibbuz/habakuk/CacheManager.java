@@ -45,6 +45,7 @@ public class CacheManager {
 
     private static final Logger w = LogManager.getLogger(CacheManager.class);
     private static final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+    private static final AtomicLong POLL_INTERVAL = new AtomicLong(2000);
 
     private final Path dir;
     private final DirectoryObserver dirObs;
@@ -65,25 +66,42 @@ public class CacheManager {
 
         w.info("i am managing directory [ " + dir + " ]");
 
-        AtomicLong waitTime = new AtomicLong(2000);
+        for (;;) {
+            pollSimple();
+        }
 
+    }
+
+    private void pollSimple() {
         try {
-            for (;;) {
-                w.info("iteration wait -> " + waitTime.get() + "ms");
-                ScheduledFuture<String> future = exec.schedule(() -> {
-                    return processQueue();
-                }, waitTime.get(), TimeUnit.MILLISECONDS);
-                String task = future.get();
-                if (task != null) {
-                    w.info("file [ " + task + " ] needs refresh");
-                } else {
-                    w.info("no work :D");
-                }
-            }
+            Thread.sleep(POLL_INTERVAL.get());
+            evalQueueResult(
+                    processQueue()
+            );
+        } catch (InterruptedException e) {
+            w.error(e.getMessage());
+        }
+    }
+
+
+    private void pollComplex() {
+        try {
+            ScheduledFuture<String> future = exec.schedule(() -> {
+                return processQueue();
+            }, POLL_INTERVAL.get(), TimeUnit.MILLISECONDS);
+            evalQueueResult(
+                    future.get()
+            );
         } catch (InterruptedException | ExecutionException e) {
             w.warn(e.getMessage());
         }
+    }
 
+
+    private void evalQueueResult(final String data) {
+        if (data != null) {
+                w.info("file [ " + data + " ] needs refresh");
+            }
     }
 
     /**
